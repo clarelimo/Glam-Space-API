@@ -3,7 +3,6 @@ import dao.DB;
 import dao.Sql2oBedRoomDao;
 import dao.Sql2oKitchenDao;
 import dao.Sql2oLivingRoomDao;
-import exceptions.ApiException;
 import models.BedRoom;
 import models.Kitchen;
 import models.LivingRoom;
@@ -15,7 +14,16 @@ import java.util.Map;
 import static spark.Spark.*;
 
 public class App {
+    static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+        return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4567;
+    }
+
     public static void main(String[] args) {
+        port(getHerokuAssignedPort());
         Sql2oKitchenDao sql2oKitchenDao;
         Sql2oLivingRoomDao sql2oLivingRoomDao;
         Sql2oBedRoomDao sql2oBedRoomDao;
@@ -27,17 +35,17 @@ public class App {
         sql2oBedRoomDao = new Sql2oBedRoomDao(DB.sql2o);
         conn = DB.sql2o.open();
 
-//        get("/", "application/json", (req, res) -> {
-//            System.out.println(.getAll());
-//
-//            if(departmentDao.getAll().size() > 0){
-//                return gson.toJson(departmentDao.getAll());
-//            }
-//
-//            else {
-//                return "{\"message\":\"I'm sorry, but no departments are currently listed in the database.\"}";
-//            }
-//        });
+        get("/", "application/json", (req, res) -> {
+            System.out.println(sql2oBedRoomDao.getAll());
+
+            if(sql2oBedRoomDao.getAll().size() > 0){
+                return gson.toJson(sql2oBedRoomDao.getAll());
+            }
+
+            else {
+                return "{\"message\":\"I'm sorry, but no departments are currently listed in the database.\"}";
+            }
+        });
 
         //CREATE
         post("/kitchen/new", "application/json", (req, res) -> {
@@ -96,17 +104,6 @@ public class App {
             else {
                 return "{\"message\":\"I'm sorry, but no bedrooms are currently listed in the database.\"}";
             }
-        });
-
-        //FILTERS
-        exception(ApiException.class, (exception, req, res) -> {
-            ApiException err = exception;
-            Map<String, Object> jsonMap = new HashMap<>();
-            jsonMap.put("status", err.getStatusCode());
-            jsonMap.put("errorMessage", err.getMessage());
-            res.type("application/json");
-            res.status(err.getStatusCode());
-            res.body(gson.toJson(jsonMap));
         });
 
         after((req, res) ->{
