@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface BedRoomDao {
     //create
-    void add(BedRoom kitchen);
+    void add(BedRoom bedRoom);
 
     //read
     List<BedRoom> getAll();
