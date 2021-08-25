@@ -1,29 +1,28 @@
 package dao;
 
-import models.LivingRoom;
+import models.Kitchen;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 import org.sql2o.Sql2oException;
 
 import java.util.List;
 
-public class Sql2oLivingRoomDao implements LivingRoomDao {
-
+public class Sql2oKitchenDao implements KitchenDao {
     private final Sql2o sql2o;
 
-    public Sql2oLivingRoomDao(Sql2o sql2o) {
+    public Sql2oKitchenDao(Sql2o sql2o) {
         this.sql2o = sql2o;
     }
 
     @Override
-    public void add(LivingRoom livingRoom) {
-        String sql = "INSERT INTO living_rooms (description,place,link) VALUES(:description,:place,:link)";
+    public void add(Kitchen kitchen) {
+        String sql = "INSERT INTO kitchens (description,place,link) VALUES(:description,:place,:link)";
         try (Connection conn = sql2o.open()){
             int id = (int) conn.createQuery(sql,true)
-                    .bind(livingRoom)
+                    .bind(kitchen)
                     .executeUpdate()
                     .getKey();
-            livingRoom.setId(id);
+            kitchen.setId(id);
 
         }catch (Sql2oException ex){
             System.out.println(ex);
@@ -31,25 +30,25 @@ public class Sql2oLivingRoomDao implements LivingRoomDao {
     }
 
     @Override
-    public List<LivingRoom> getAll() {
+    public List<Kitchen> getAll() {
         try (Connection conn = sql2o.open()) {
-            return conn.createQuery("SELECT * FROM living_rooms")
-                    .executeAndFetch(LivingRoom.class);
+            return conn.createQuery("SELECT * FROM kitchens")
+                    .executeAndFetch(Kitchen.class);
         }
     }
 
     @Override
-    public LivingRoom findById(int id) {
+    public Kitchen findById(int id) {
         try (Connection con = sql2o.open()) {
-            return con.createQuery("SELECT * FROM living_rooms WHERE id = :id")
+            return con.createQuery("SELECT * FROM kitchens WHERE id = :id")
                     .addParameter("id", id)
-                    .executeAndFetchFirst(LivingRoom.class);
+                    .executeAndFetchFirst(Kitchen.class);
         }
     }
 
     @Override
     public void deleteById(int id) {
-        String sql = "DELETE from living_rooms WHERE id = :id";
+        String sql = "DELETE from kitchens WHERE id = :id";
         try  (Connection conn = sql2o.open()){
             conn.createQuery(sql)
                     .addParameter("id",id)
@@ -61,7 +60,7 @@ public class Sql2oLivingRoomDao implements LivingRoomDao {
 
     @Override
     public void clearAll() {
-        String sql = "DELETE from living_rooms";
+        String sql = "DELETE from kitchens";
         try (Connection conn = sql2o.open()){
             conn.createQuery(sql)
                     .executeUpdate();
