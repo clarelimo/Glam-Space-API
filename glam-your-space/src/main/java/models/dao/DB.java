@@ -1,4 +1,4 @@
-package dao;
+package models.dao;
 
 import org.sql2o.Sql2o;
 
